@@ -13,7 +13,6 @@ AECSentry::AECSentry()
 	if(SM.Succeeded())
 	{
 		StaticMeshComponent->SetStaticMesh(SM.Object);
-		StaticMeshComponent->SetRelativeLocation(FVector::ZeroVector);
 	}
 
 	
@@ -53,7 +52,7 @@ AECSentry::AECSentry()
 	SkillRangeList.push_back(StaticMeshComponent);
 	
 	StaticMeshComponent->SetVisibility(false);
-	StaticMeshComponent->SetCollisionProfileName(FName("DamageZone"));
+	StaticMeshComponent->SetCollisionProfileName(FName("NoCollision"));
 }
 
 void AECSentry::BeginPlay()
