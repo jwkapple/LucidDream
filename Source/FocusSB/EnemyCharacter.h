@@ -71,8 +71,16 @@ public:
 	virtual void DeActivate(){};
 
 	virtual void DamagePlayer(){};
+
+	UFUNCTION(BlueprintCallable)
+	FEnemySkill GetSkill(const int& value) { return SkillList[value]; };
+
+	UFUNCTION(BlueprintCallable)
+	UStaticMeshComponent* GetSkillRange(const int& value) { return SkillRangeList[value];};
 protected:
+
 	std::vector<FEnemySkill> SkillList;
+
 	std::vector<UStaticMeshComponent*> SkillRangeList;
 
 	UPROPERTY(VisibleAnywhere, Category = Player)
