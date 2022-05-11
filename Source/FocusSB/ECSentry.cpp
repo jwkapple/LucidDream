@@ -33,8 +33,8 @@ AECSentry::AECSentry()
 	SkillList.push_back(FEnemySkill(RSSkillDmg, RSTimeBef, RSTimeRn, RSTimeAft));
 	SkillRangeList.push_back(StaticMeshComponent);
 
-	constexpr float BPSkillDmg = 5;
-	constexpr float BPTimeBef = 0.5f;
+	constexpr float BPSkillDmg = 15;
+	constexpr float BPTimeBef = 3.0f;
 	constexpr float BPTimeRn = 0.2f;
 	constexpr float BPTimeAft = 0.3f;
 	
@@ -43,7 +43,7 @@ AECSentry::AECSentry()
 	StaticMeshComponent->OnComponentEndOverlap.AddDynamic(this, &AECSentry::OnOverlapEnd);
 	SkillRangeList.push_back(StaticMeshComponent);
 	
-	constexpr float GSSkillDmg = 5;
+	constexpr float GSSkillDmg = 10;
 	constexpr float GSTimeBef = 0.5f;
 	constexpr float GSTimeRn = 0.2f;
 	constexpr float GSTimeAft = 0.3f;
