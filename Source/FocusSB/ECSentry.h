@@ -48,5 +48,5 @@ private:
 	UMaterialInstance* MaterialInstance;
 	bool isPlayerOn;
 	ESkill CurSkill;
-	FTimerHandle Timer;
+	FTimerHandle ECBPTimer;
 };

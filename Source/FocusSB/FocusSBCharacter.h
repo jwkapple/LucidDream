@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Components/TimelineComponent.h"
 #include "FocusSBGameInstance.h"
+#include "Components/SphereComponent.h"
 #include "FocusSBCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerTurnEndDelegate);
@@ -42,6 +43,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = Delegate)
 	FPlayerTurnEndDelegate OnPlayerTurnEnd;
 
+	UPROPERTY(VisibleAnywhere, Category = Skill)
+	UStaticMeshComponent* Shield;
+
+	UPROPERTY(VisibleAnywhere, Category = Skill)
+	UMaterialInstance* Shield_M;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 protected:
@@ -55,7 +61,7 @@ protected:
 	void OnAction();
 
 	UFUNCTION(BlueprintCallable)
-	void OnManaUse();
+	void OnShield();
 	
 	void TurnAtRate(float Rate);
 
@@ -145,5 +151,6 @@ public:
 private:
 	uint8 MP = MP_MAX;
 	float HP = 100.0f;
+	bool isShield = false;
 };
 

@@ -115,14 +115,13 @@ void AECSentry::DamagePlayer()
 	
 	isPlayerOn = false;
 	
-	GetWorldTimerManager().ClearTimer(Timer);
+	GetWorldTimerManager().ClearTimer(ECBPTimer);
 }
 
 void AECSentry::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ECSentry:: OnBeginOverlap"));
-
 	isPlayerOn = true;
 }
 
@@ -147,7 +146,7 @@ void AECSentry::BluePunishment()
 	pCurRange->SetCollisionProfileName(FName("DamageZone"));
 	pCurRange->SetVisibility(true);
 
-	GetWorldTimerManager().SetTimer(Timer, this, &AECSentry::DamagePlayer, 3.0f, false);
+	GetWorldTimerManager().SetTimer(ECBPTimer, this, &AECSentry::DamagePlayer, 3.0f, false);
 
 	UE_LOG(LogTemp, Warning, TEXT("ECSentry:: Player ATTACKED"));
 }

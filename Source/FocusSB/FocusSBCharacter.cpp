@@ -25,7 +25,7 @@ AFocusSBCharacter::AFocusSBCharacter()
 	// set our turn rates for input
 	BaseTurnRate = 45.f;
 	BaseLookUpRate = 45.f;
-
+ 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -36,7 +36,6 @@ AFocusSBCharacter::AFocusSBCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
-
 	
 	mTargetarmLength = 1000.0f;
 	
@@ -55,6 +54,28 @@ AFocusSBCharacter::AFocusSBCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
 
+	Shield = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShieldComponent"));
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SPSM(TEXT("/Game/Geometry/Meshes/ShieldMesh.ShieldMesh"));
+	if(SPSM.Succeeded())
+	{
+		Shield->SetStaticMesh(SPSM.Object);
+	}
+
+	Shield->SetCollisionProfileName(FName("NoCollision"));
+	Shield->SetupAttachment(GetRootComponent());
+	Shield->SetWorldLocation(FVector::ZeroVector);
+	Shield->SetVisibility(false);
+	
+	Shield_M = CreateDefaultSubobject<UMaterialInstance>(TEXT("ShieldMI"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> SMI(TEXT("/Game/Skill/DivineShield_MI.DivineShield_MI"));
+	if(SMI.Succeeded())
+	{
+		Shield_M = SMI.Object;
+	}
+	
+	Shield->SetMaterial(0, Shield_M);
+	
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> ECF(TEXT("/Game/GameTurn/EnemyCurveFloat.EnemyCurveFloat"));
 	if(ECF.Succeeded())
 	{
@@ -103,8 +124,8 @@ AFocusSBCharacter::AFocusSBCharacter()
 void AFocusSBCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFocusSBCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFocusSBCharacter::MoveRight);
@@ -122,6 +143,7 @@ void AFocusSBCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AFocusSBCharacter::OnResetVR);
 
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AFocusSBCharacter::OnAction);
+	PlayerInputComponent->BindAction("Shield", IE_Pressed, this, &AFocusSBCharacter::OnShield);
 }
 
 
@@ -129,6 +151,7 @@ void AFocusSBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
 	EnemyTL.Play();
 }
 
@@ -237,10 +260,27 @@ void AFocusSBCharacter::OnAction()
 	}
 }
 
-void AFocusSBCharacter::OnManaUse()
+void AFocusSBCharacter::OnShield()
 {
-	UE_LOG(LogTemp, Warning, TEXT("On Mana Use"));
+	if(CurrentTurn == ETurn::Player)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnShield :: PlayerTurn"));
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("OnShield :: Activate"));
+
 	UseMP(1);
+	Shield->SetVisibility(true);
+	isShield = true;
+
+	FTimerHandle Timer;
+
+	GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateLambda([&]()
+	{
+		Shield->SetVisibility(false);
+		isShield = false;
+	}), 2.0f, false);
+	
 }
 
 
@@ -292,6 +332,10 @@ void AFocusSBCharacter::UseMP(const uint8& value)
 
 void AFocusSBCharacter::UseHP(const float& value)
 {
+	if(isShield) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Player Damaged"));
+	
 	HP -= value;
 
 	if(OnHPChange.IsBound())
