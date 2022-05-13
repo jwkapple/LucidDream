@@ -155,7 +155,6 @@ void AFocusSBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	mShield->SetVisibility(false);
 	EnemyTL.Play();
 }
 
@@ -335,6 +334,11 @@ void AFocusSBCharacter::OnEnemyEnd()
 	UE_LOG(LogTemp, Warning, TEXT("--------------------------Enemy Turn End-------------------------"));
 	PlayerTL.PlayFromStart();
 	CurrentTurn = ETurn::Player;
+
+	if(OnEnemyTurnEnd.IsBound())
+	{
+		OnEnemyTurnEnd.Broadcast();
+	}
 };
 void AFocusSBCharacter::OnPlayerEnd()
 {

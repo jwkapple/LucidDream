@@ -10,6 +10,7 @@
 #include "FocusSBCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerTurnEndDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnemyTurnEndDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMPChangeDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPChangeDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPotionChangeDelegate);
@@ -42,6 +43,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category = Delegate)
 	FPlayerTurnEndDelegate OnPlayerTurnEnd;
+
+	UPROPERTY(BlueprintAssignable, Category = Delegate)
+	FEnemyTurnEndDelegate OnEnemyTurnEnd;
 
 	UPROPERTY(VisibleAnywhere, Category = Skill)
 	UStaticMeshComponent* mShield;
