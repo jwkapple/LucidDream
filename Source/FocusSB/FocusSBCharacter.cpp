@@ -304,7 +304,9 @@ void AFocusSBCharacter::OnPotion()
 		return;
 	}
 	mPotion--;
-	UseHP(HP * -1);
+
+	int HealValue = HP - 100.0f;
+	UseHP(HealValue);
 	
 	if(OnPotionChange.IsBound())
 	{
@@ -312,7 +314,6 @@ void AFocusSBCharacter::OnPotion()
 		OnPotionChange.Broadcast();
 	}
 }
-
 
 void AFocusSBCharacter::PauseTimer()
 {
