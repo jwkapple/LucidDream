@@ -146,6 +146,8 @@ void AFocusSBCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AFocusSBCharacter::OnAction);
 	PlayerInputComponent->BindAction("Shield", IE_Pressed, this, &AFocusSBCharacter::OnShield);
+	PlayerInputComponent->BindAction("Potion", IE_Pressed, this, &AFocusSBCharacter::OnPotion);
+
 }
 
 
@@ -281,6 +283,24 @@ void AFocusSBCharacter::OnShield()
 		isShield = false;
 	}), 2.0f, false);
 	
+}
+
+void AFocusSBCharacter::OnPotion()
+{
+	if(mPotion == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NO POTION LEFT!!"));
+		return;
+	}
+
+	mPotion--;
+	UseHP(-20.0f);
+	
+	if(OnPotionChange.IsBound())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnPotionChange Broadcast"));
+		OnPotionChange.Broadcast();
+	}
 }
 
 

@@ -12,7 +12,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerTurnEndDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMPChangeDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPChangeDelegate);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPotionChangeDelegate);
 
 UENUM()
 enum class EDirection
@@ -26,7 +26,7 @@ class AFocusSBCharacter : public ACharacter
 	GENERATED_BODY()
 
 	enum MANA{MP_MIN = 0, MP_MAX = 3};
-	
+	enum POTION{PO_MIN = 0, PO_MAX = 3};
 public:
 	AFocusSBCharacter();
 	
@@ -60,8 +60,9 @@ protected:
 
 	void OnAction();
 
-	UFUNCTION(BlueprintCallable)
 	void OnShield();
+
+	void OnPotion();
 	
 	void TurnAtRate(float Rate);
 
@@ -134,13 +135,19 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FHPChangeDelegate OnHPChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FPotionChangeDelegate OnPotionChange;
 	
 	UFUNCTION(BlueprintCallable)
 	const uint8& GetMP() const { UE_LOG(LogTemp, Warning, TEXT("Returning MP")); return MP; };
 
 	UFUNCTION(BlueprintCallable)
 	const float& GetHP() const { UE_LOG(LogTemp, Warning, TEXT("Returning HP")); return HP; };
-	
+
+	UFUNCTION(BlueprintCallable)
+	const uint8& GetPotion() const { UE_LOG(LogTemp, Warning, TEXT("Returning POTION")); return mPotion; };
+
 	UFUNCTION(BlueprintCallable)
 	void UseMP(const uint8& value);
 
@@ -151,7 +158,9 @@ public:
 	bool isShield = false;
 private:
 	uint8 MP = MP_MAX;
+	uint8 mPotion = PO_MAX;
 	float HP = 100.0f;
+	
 	FTimerHandle CharacterTimer;
 };
 
