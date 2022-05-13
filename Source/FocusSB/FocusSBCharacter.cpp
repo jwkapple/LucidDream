@@ -289,10 +289,21 @@ void AFocusSBCharacter::OnPotion()
 {
 	if(mPotion == 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("NO POTION LEFT!!"));
+		UE_LOG(LogTemp, Warning, TEXT("OnPotion:: NO MORE POTION LEFT!!"));
 		return;
 	}
 
+	if(HP == 100.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnPotion:: HP is already full!!"));
+		return;
+	}
+
+	if(isPotionAvailable == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnPotion:: Already used potion at this turn!!"));
+		return;
+	}
 	mPotion--;
 	UseHP(HP * -1);
 	
@@ -328,8 +339,11 @@ void AFocusSBCharacter::OnEnemyEnd()
 void AFocusSBCharacter::OnPlayerEnd()
 {
 	UE_LOG(LogTemp, Warning, TEXT("-------------------------Player Turn End-------------------------"));
+
 	EnemyTL.PlayFromStart();
+	
 	CurrentTurn = ETurn::Enemy;
+	isPotionAvailable = true;
 	
 	if(OnPlayerTurnEnd.IsBound())
 	{

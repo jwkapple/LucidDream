@@ -156,6 +156,9 @@ public:
 
 	UPROPERTY()
 	bool isShield = false;
+
+	UPROPERTY()
+	bool isPotionAvailable = true;
 private:
 	uint8 MP = MP_MAX;
 	uint8 mPotion = PO_MAX;
