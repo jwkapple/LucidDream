@@ -44,7 +44,7 @@ public:
 	FPlayerTurnEndDelegate OnPlayerTurnEnd;
 
 	UPROPERTY(VisibleAnywhere, Category = Skill)
-	UStaticMeshComponent* Shield;
+	UStaticMeshComponent* mShield;
 
 	UPROPERTY(VisibleAnywhere, Category = Skill)
 	UMaterialInstance* Shield_M;
@@ -77,7 +77,6 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
-	
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -147,10 +146,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void UseHP(const float& value);
-	
+
+	UPROPERTY()
+	bool isShield = false;
 private:
 	uint8 MP = MP_MAX;
 	float HP = 100.0f;
-	bool isShield = false;
+	FTimerHandle CharacterTimer;
 };
 

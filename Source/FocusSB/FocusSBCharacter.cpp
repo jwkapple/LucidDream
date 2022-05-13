@@ -54,18 +54,20 @@ AFocusSBCharacter::AFocusSBCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = true; // Camera does not rotate relative to arm
 
-	Shield = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShieldComponent"));
+	mShield = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShieldComponent"));
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SPSM(TEXT("/Game/Geometry/Meshes/ShieldMesh.ShieldMesh"));
 	if(SPSM.Succeeded())
 	{
-		Shield->SetStaticMesh(SPSM.Object);
+		UE_LOG(LogTemp, Warning, TEXT("Found Sphere Object"));
+		mShield->SetStaticMesh(SPSM.Object);
 	}
 
-	Shield->SetCollisionProfileName(FName("NoCollision"));
-	Shield->SetupAttachment(GetRootComponent());
-	Shield->SetWorldLocation(FVector::ZeroVector);
-	Shield->SetVisibility(false);
+	mShield->SetVisibility(false);
+	mShield->SetCollisionProfileName(FName("NoCollision"));
+	mShield->SetupAttachment(GetRootComponent());
+	mShield->SetWorldLocation(FVector::ZeroVector);
+	
 	
 	Shield_M = CreateDefaultSubobject<UMaterialInstance>(TEXT("ShieldMI"));
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> SMI(TEXT("/Game/Skill/DivineShield_MI.DivineShield_MI"));
@@ -74,7 +76,7 @@ AFocusSBCharacter::AFocusSBCharacter()
 		Shield_M = SMI.Object;
 	}
 	
-	Shield->SetMaterial(0, Shield_M);
+	mShield->SetMaterial(0, Shield_M);
 	
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> ECF(TEXT("/Game/GameTurn/EnemyCurveFloat.EnemyCurveFloat"));
 	if(ECF.Succeeded())
@@ -151,7 +153,7 @@ void AFocusSBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	mShield->SetVisibility(false);
 	EnemyTL.Play();
 }
 
@@ -265,19 +267,17 @@ void AFocusSBCharacter::OnShield()
 	if(CurrentTurn == ETurn::Player)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OnShield :: PlayerTurn"));
-		return;
 	}
+	
 	UE_LOG(LogTemp, Warning, TEXT("OnShield :: Activate"));
 
 	UseMP(1);
-	Shield->SetVisibility(true);
+	mShield->SetVisibility(true);
 	isShield = true;
 
-	FTimerHandle Timer;
-
-	GetWorldTimerManager().SetTimer(Timer, FTimerDelegate::CreateLambda([&]()
+	GetWorldTimerManager().SetTimer(CharacterTimer, FTimerDelegate::CreateLambda([&]()
 	{
-		Shield->SetVisibility(false);
+		mShield->SetVisibility(false);
 		isShield = false;
 	}), 2.0f, false);
 	
