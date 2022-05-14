@@ -78,12 +78,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetSkillRange(const int& value) { return SkillRangeList[value];};
+
+	UPROPERTY(VisibleAnywhere)
+	int RangeListNum;
 protected:
-	void InitSkill(const char* SMPathName, const char* SMPath, const char* MIPathName, const char* MIPath);
+	void InitSkill(UStaticMeshComponent* StaticMeshComponent);
 	
 	std::vector<FEnemySkill> SkillList;
 
-	std::vector<UStaticMeshComponent*> SkillRangeList;
+	TArray<UStaticMeshComponent*> SkillRangeList;
 
 	UPROPERTY(VisibleAnywhere, Category = Player)
 	class AFocusSBCharacter* PlayerCharacter;

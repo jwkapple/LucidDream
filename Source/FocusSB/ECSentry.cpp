@@ -8,10 +8,69 @@
 
 AECSentry::AECSentry()
 {
-	InitSkill("ROONSTONE", "/Game/Geometry/Meshes/BluePunishment.BluePunishment", "ROONSTONEMI", "/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI");
-	InitSkill("BLUEPUNISHMENT", "/Game/Geometry/Meshes/BluePunishment.BluePunishment", "BLUEPUNISHMENTMI", "/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI");
-	InitSkill("GODSSHOUT", "/Game/Geometry/Meshes/GodsShout.GodsShout", "GODSSHOUTMI", "/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI");
+	
+	auto RoonstoneSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ROONSTONE"));
+	
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> RoonstoneSM(TEXT("/Game/Geometry/Meshes/1M_Cube_Chamfer.1M_Cube_Chamfer"));
+	if( RoonstoneSM.Succeeded())
+	{
+		RoonstoneSMC->SetStaticMesh(RoonstoneSM.Object);
+	}
+	InitSkill(RoonstoneSMC);
+	
+	MaterialInstance = CreateDefaultSubobject<UMaterialInstance>(TEXT("ROONSTONEMI"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> RoonstoneMI(TEXT("/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI"));
+	if(RoonstoneMI.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyCharacter:: Found Material Instance"));
+		MaterialInstance = RoonstoneMI.Object;
+		RoonstoneSMC->SetMaterial(0, MaterialInstance);
+	}
 
+	SkillRangeList.Emplace(RoonstoneSMC);
+	
+	
+	auto BluePunishmentSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BLUEPUNISHMENT"));
+	
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> BluePunishmentSM(TEXT("/Game/Geometry/Meshes/BluePunishment.BluePunishment"));
+	if(BluePunishmentSM.Succeeded())
+	{
+		BluePunishmentSMC->SetStaticMesh(BluePunishmentSM.Object);
+	}
+	InitSkill(BluePunishmentSMC);
+	
+	MaterialInstance = CreateDefaultSubobject<UMaterialInstance>(TEXT("BLUEPUNISHMENTMI"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> BluePunishmentMI(TEXT("/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI"));
+	if(BluePunishmentMI.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyCharacter:: Found Material Instance"));
+		MaterialInstance = BluePunishmentMI.Object;
+		BluePunishmentSMC->SetMaterial(0, MaterialInstance);
+	}
+
+	SkillRangeList.Emplace(BluePunishmentSMC);
+	
+	
+	auto GodsShoutSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GODSSHOUT"));
+	
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> GodsShoutSM(TEXT("/Game/Geometry/Meshes/GodsShout.GodsShout"));
+	if(GodsShoutSM.Succeeded())
+	{
+		GodsShoutSMC->SetStaticMesh(GodsShoutSM.Object);
+	}
+	InitSkill(GodsShoutSMC);
+	
+	MaterialInstance = CreateDefaultSubobject<UMaterialInstance>(TEXT("GODSSHOUTMI"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> GodsShoutMI(TEXT("/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI"));
+	if(GodsShoutMI.Succeeded())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("EnemyCharacter:: Found Material Instance"));
+		MaterialInstance =  GodsShoutMI.Object;
+		GodsShoutSMC->SetMaterial(0, MaterialInstance);
+	}
+
+	SkillRangeList.Emplace(GodsShoutSMC);
+	
 	for(auto p : SkillRangeList)
 	{
 		p->OnComponentBeginOverlap.AddDynamic(this, &AECSentry::OnBeginOverlap);
@@ -22,6 +81,7 @@ AECSentry::AECSentry()
 	constexpr float RSTimeBef = 0.5f;
 	constexpr float RSTimeRn = 0.2f;
 	constexpr float RSTimeAft = 0.3f;
+
 	
 	SkillList.push_back(FEnemySkill(RSSkillDmg, RSTimeBef, RSTimeRn, RSTimeAft));
 
@@ -55,6 +115,7 @@ void AECSentry::BeginPlay()
 	
 	PlayerCharacter->OnPlayerTurnEnd.AddDynamic(this,&AECSentry::Activate);
 
+	RangeListNum = SkillRangeList.Num();
 }
 
 void AECSentry::Tick(float DeltaSeconds)
@@ -67,17 +128,25 @@ void AECSentry::Activate()
 	Super::Activate();
 
 	UE_LOG(LogTemp, Warning, TEXT("ECSentry:: Activate"));
-	ESkill useSkill = BLUEPUNISHMENT;
 
-	switch(useSkill)
+	const int skillCase = FMath::RandRange(1, 2);
+	switch (skillCase)
 	{
-		case ROONSTONE: RoonStone(); break;
-
-		case BLUEPUNISHMENT: BluePunishment(); break;
-
-		case GODSSHOUT: GodsShout(); break;
-
-		default: break;
+	case ROONSTONE:
+		{
+			RoonStone();
+			break;
+		}
+	case BLUEPUNISHMENT:
+		{
+			BluePunishment();
+			break;
+		}
+	case GODSSHOUT:
+		{
+			GodsShout(); 
+			break;
+		}
 	}
 }
 
@@ -94,7 +163,7 @@ void AECSentry::DamagePlayer()
 	
 	if(isPlayerOn) PlayerCharacter->UseHP(SkillList[CurSkill].SkillDmg);
 
-	auto pCurRange = SkillRangeList[CurSkill];
+	auto pCurRange = GetSkillRange(CurSkill);
 	
 	pCurRange->SetCollisionProfileName(FName("NoCollision"));
 	pCurRange->SetVisibility(false);
@@ -127,7 +196,7 @@ void AECSentry::BluePunishment()
 {
 	CurSkill = BLUEPUNISHMENT;
 	
-	auto pCurRange = SkillRangeList[CurSkill];
+	auto pCurRange = GetSkillRange(CurSkill);
 
 	pCurRange->SetCollisionProfileName(FName("DamageZone"));
 	pCurRange->SetVisibility(true);
@@ -139,9 +208,10 @@ void AECSentry::BluePunishment()
 
 void AECSentry::GodsShout()
 {
+	UE_LOG(LogTemp, Warning, TEXT("ECSentry:: GODSSHOUT ACTIVATE"));
 	CurSkill = GODSSHOUT;
 
-	auto pCurRange = SkillRangeList[CurSkill];
+	UStaticMeshComponent* pCurRange = GetSkillRange(CurSkill);
 
 	pCurRange->SetCollisionProfileName(FName("DamageZone"));
 	pCurRange->SetVisibility(true);

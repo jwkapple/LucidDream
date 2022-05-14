@@ -37,6 +37,9 @@ public:
 
 	UFUNCTION()
 	void OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UPROPERTY(VisibleAnywhere)
+	int CurSkill;
 private:
 	
 	void RoonStone();
@@ -48,6 +51,6 @@ private:
 private:
 	UMaterialInstance* MaterialInstance;
 	bool isPlayerOn;
-	ESkill CurSkill;
+	
 	FTimerHandle ECBPTimer;
 };
