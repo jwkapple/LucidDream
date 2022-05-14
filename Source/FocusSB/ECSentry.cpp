@@ -8,7 +8,8 @@
 
 AECSentry::AECSentry()
 {
-	
+
+	// ====================== ROONSTONE ======================
 	auto RoonstoneSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ROONSTONE"));
 	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> RoonstoneSM(TEXT("/Game/Geometry/Meshes/1M_Cube_Chamfer.1M_Cube_Chamfer"));
@@ -29,7 +30,7 @@ AECSentry::AECSentry()
 
 	SkillRangeList.Emplace(RoonstoneSMC);
 	
-	
+	// ====================== BLUEPUNISHMENT ======================
 	auto BluePunishmentSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BLUEPUNISHMENT"));
 	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BluePunishmentSM(TEXT("/Game/Geometry/Meshes/BluePunishment.BluePunishment"));
@@ -50,7 +51,7 @@ AECSentry::AECSentry()
 
 	SkillRangeList.Emplace(BluePunishmentSMC);
 	
-	
+	// ====================== GODSSHOUT ======================
 	auto GodsShoutSMC = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GODSSHOUT"));
 	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> GodsShoutSM(TEXT("/Game/Geometry/Meshes/GodsShout.GodsShout"));
@@ -70,6 +71,8 @@ AECSentry::AECSentry()
 	}
 
 	SkillRangeList.Emplace(GodsShoutSMC);
+
+
 	
 	for(auto p : SkillRangeList)
 	{
