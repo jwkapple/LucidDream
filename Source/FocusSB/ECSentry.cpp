@@ -8,21 +8,14 @@
 
 AECSentry::AECSentry()
 {
-	UStaticMeshComponent* StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SMC"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM(TEXT("/Game/Geometry/Meshes/BluePunishment.BluePunishment"));
-	if(SM.Succeeded())
-	{
-		StaticMeshComponent->SetStaticMesh(SM.Object);
-	}
+	InitSkill("ROONSTONE", "/Game/Geometry/Meshes/BluePunishment.BluePunishment", "ROONSTONEMI", "/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI");
+	InitSkill("BLUEPUNISHMENT", "/Game/Geometry/Meshes/BluePunishment.BluePunishment", "BLUEPUNISHMENTMI", "/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI");
+	InitSkill("GODSSHOUT", "/Game/Geometry/Meshes/GodsShout.GodsShout", "GODSSHOUTMI", "/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI");
 
-	
-	MaterialInstance = CreateDefaultSubobject<UMaterialInstance>(TEXT("MaterialInstance"));
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> MI(TEXT("/Game/Enemy/Sentry/BluePunishment_MI.BluePunishment_MI"));
-	if(MI.Succeeded())
+	for(auto p : SkillRangeList)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("ECSentry:: Found Material Instance"));
-		MaterialInstance = MI.Object;
-		StaticMeshComponent->SetMaterial(0, MaterialInstance);
+		p->OnComponentBeginOverlap.AddDynamic(this, &AECSentry::OnBeginOverlap);
+		p->OnComponentEndOverlap.AddDynamic(this, &AECSentry::OnOverlapEnd);
 	}
 	
 	constexpr float RSSkillDmg = 5;
@@ -31,7 +24,7 @@ AECSentry::AECSentry()
 	constexpr float RSTimeAft = 0.3f;
 	
 	SkillList.push_back(FEnemySkill(RSSkillDmg, RSTimeBef, RSTimeRn, RSTimeAft));
-	SkillRangeList.push_back(StaticMeshComponent);
+
 
 	constexpr float BPSkillDmg = 15;
 	constexpr float BPTimeBef = 3.0f;
@@ -39,20 +32,13 @@ AECSentry::AECSentry()
 	constexpr float BPTimeAft = 0.3f;
 	
 	SkillList.push_back(FEnemySkill(BPSkillDmg, BPTimeBef, BPTimeRn, BPTimeAft));
-	StaticMeshComponent->OnComponentBeginOverlap.AddDynamic(this, &AECSentry::OnBeginOverlap);
-	StaticMeshComponent->OnComponentEndOverlap.AddDynamic(this, &AECSentry::OnOverlapEnd);
-	SkillRangeList.push_back(StaticMeshComponent);
-	
+
 	constexpr float GSSkillDmg = 10;
 	constexpr float GSTimeBef = 0.5f;
 	constexpr float GSTimeRn = 0.2f;
 	constexpr float GSTimeAft = 0.3f;
 	
 	SkillList.push_back(FEnemySkill(GSSkillDmg, GSTimeBef, GSTimeRn, GSTimeAft));
-	SkillRangeList.push_back(StaticMeshComponent);
-	
-	StaticMeshComponent->SetVisibility(false);
-	StaticMeshComponent->SetCollisionProfileName(FName("NoCollision"));
 }
 
 void AECSentry::BeginPlay()
@@ -68,9 +54,7 @@ void AECSentry::BeginPlay()
 	isPlayerOn = false;
 	
 	PlayerCharacter->OnPlayerTurnEnd.AddDynamic(this,&AECSentry::Activate);
-	SkillRangeList[BLUEPUNISHMENT]->SetMaterial(0, MaterialInstance);
-	SkillRangeList[BLUEPUNISHMENT]->SetWorldLocation(FVector(0.0f, 0.0f, 30.0f));
-	SkillRangeList[BLUEPUNISHMENT]->SetWorldRotation(FRotator(30.0f, 00.0f, 0.0f));
+
 }
 
 void AECSentry::Tick(float DeltaSeconds)
@@ -110,8 +94,10 @@ void AECSentry::DamagePlayer()
 	
 	if(isPlayerOn) PlayerCharacter->UseHP(SkillList[CurSkill].SkillDmg);
 
-	SkillRangeList[CurSkill]->SetVisibility(false);
-	SkillRangeList[CurSkill]->SetCollisionProfileName(FName("NoCollision"));
+	auto pCurRange = SkillRangeList[CurSkill];
+	
+	pCurRange->SetCollisionProfileName(FName("NoCollision"));
+	pCurRange->SetVisibility(false);
 	
 	isPlayerOn = false;
 	
@@ -153,5 +139,14 @@ void AECSentry::BluePunishment()
 
 void AECSentry::GodsShout()
 {
-	
+	CurSkill = GODSSHOUT;
+
+	auto pCurRange = SkillRangeList[CurSkill];
+
+	pCurRange->SetCollisionProfileName(FName("DamageZone"));
+	pCurRange->SetVisibility(true);
+
+	GetWorldTimerManager().SetTimer(ECBPTimer, this, &AECSentry::DamagePlayer, 3.0f, false);
+
+	UE_LOG(LogTemp, Warning, TEXT("ECSentry:: Player ATTACKED"));
 }

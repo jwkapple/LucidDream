@@ -56,7 +56,7 @@ AFocusSBCharacter::AFocusSBCharacter()
 
 	mShield = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShieldComponent"));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SPSM(TEXT("/Game/Geometry/Meshes/ShieldMesh.ShieldMesh"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SPSM(TEXT("/Game/Skill/Meshes/Shield_SM.Shield_SM"));
 	if(SPSM.Succeeded())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Found Sphere Object"));
@@ -70,13 +70,12 @@ AFocusSBCharacter::AFocusSBCharacter()
 	
 	
 	Shield_M = CreateDefaultSubobject<UMaterialInstance>(TEXT("ShieldMI"));
-	static ConstructorHelpers::FObjectFinder<UMaterialInstance> SMI(TEXT("/Game/Skill/DivineShield_MI.DivineShield_MI"));
+	static ConstructorHelpers::FObjectFinder<UMaterialInstance> SMI(TEXT("/Game/Skill/DivineShield_Inst.DivineShield_Inst"));
 	if(SMI.Succeeded())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Sphere Material"));
 		Shield_M = SMI.Object;
 	}
-	
-	mShield->SetMaterial(0, Shield_M);
 	
 	static ConstructorHelpers::FObjectFinder<UCurveFloat> ECF(TEXT("/Game/GameTurn/EnemyCurveFloat.EnemyCurveFloat"));
 	if(ECF.Succeeded())
@@ -155,6 +154,8 @@ void AFocusSBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	mShield->SetMaterial(0, Shield_M);
+	
 	EnemyTL.Play();
 }
 

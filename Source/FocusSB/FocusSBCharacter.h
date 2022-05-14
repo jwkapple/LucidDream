@@ -103,9 +103,11 @@ public:
 	float RemainTime = 10.0f;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Time)
-	ETurn CurrentTurn;
+	ETurn CurrentTurn = ETurn::Enemy;
 	
 private:
+
+
 	UFUNCTION()
 	void OnEnemyUpdate(float value);
 	

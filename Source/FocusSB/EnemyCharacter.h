@@ -79,7 +79,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetSkillRange(const int& value) { return SkillRangeList[value];};
 protected:
-
+	void InitSkill(const char* SMPathName, const char* SMPath, const char* MIPathName, const char* MIPath);
+	
 	std::vector<FEnemySkill> SkillList;
 
 	std::vector<UStaticMeshComponent*> SkillRangeList;
