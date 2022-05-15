@@ -7,6 +7,7 @@
 #include "Components/TimelineComponent.h"
 #include "FocusSBGameInstance.h"
 #include "Components/SphereComponent.h"
+#include "EnemyCharacter.h"
 #include "FocusSBCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerTurnEndDelegate);
@@ -28,6 +29,7 @@ class AFocusSBCharacter : public ACharacter
 
 	enum MANA{MP_MIN = 0, MP_MAX = 3};
 	enum POTION{PO_MIN = 0, PO_MAX = 3};
+	
 public:
 	AFocusSBCharacter();
 	
@@ -67,7 +69,8 @@ protected:
 	void OnShield();
 
 	void OnPotion();
-	
+
+	void OnDustExplosion();
 	void TurnAtRate(float Rate);
 
 	void LookUpAtRate(float Rate);
@@ -106,8 +109,6 @@ public:
 	ETurn CurrentTurn = ETurn::Enemy;
 	
 private:
-
-
 	UFUNCTION()
 	void OnEnemyUpdate(float value);
 	
@@ -170,6 +171,8 @@ private:
 	uint8 mPotion = PO_MAX;
 	float HP = 100.0f;
 	
+	UPROPERTY(VisibleAnywhere)
+	AEnemyCharacter* pEnemyCharacter;
 	FTimerHandle CharacterTimer;
 };
 

@@ -146,7 +146,8 @@ void AFocusSBCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AFocusSBCharacter::OnAction);
 	PlayerInputComponent->BindAction("Shield", IE_Pressed, this, &AFocusSBCharacter::OnShield);
 	PlayerInputComponent->BindAction("Potion", IE_Pressed, this, &AFocusSBCharacter::OnPotion);
-
+	PlayerInputComponent->BindAction("DustExplosion", IE_Pressed, this, &AFocusSBCharacter::OnDustExplosion);
+	
 }
 
 
@@ -313,6 +314,31 @@ void AFocusSBCharacter::OnPotion()
 		UE_LOG(LogTemp, Warning, TEXT("OnPotionChange Broadcast"));
 		OnPotionChange.Broadcast();
 	}
+}
+
+void AFocusSBCharacter::OnDustExplosion()
+{
+	UseMP(1);
+
+	PlayerTL.Stop();
+
+	// Change to Side Camera
+	// Change platform's angle
+	// Play Niagara Effect
+
+	if(pEnemyCharacter == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OnDustExplosion :: No enemy found"));
+	}
+	else
+	{
+		pEnemyCharacter->SetHP(5);
+	}
+
+	// Return to main Camera
+	// Return platform's angle
+
+	PlayerTL.Play();
 }
 
 void AFocusSBCharacter::PauseTimer()

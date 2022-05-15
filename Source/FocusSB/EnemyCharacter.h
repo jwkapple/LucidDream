@@ -81,6 +81,14 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	int RangeListNum;
+
+	UFUNCTION(BlueprintCallable)
+	void SetHP(const float& value) { UseHP(); }
+
+	UFUNCTION(BlueprintCallable)
+	const float& GetHP() { return HP; }
+	
+	virtual void UseHP();
 protected:
 	void InitSkill(UStaticMeshComponent* StaticMeshComponent);
 	
@@ -90,6 +98,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Player)
 	class AFocusSBCharacter* PlayerCharacter;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+	float HP = 100.0f;
 };
 
 
