@@ -8,6 +8,8 @@
 #include "GameFramework/Actor.h"
 #include "EnemyCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPEnemyHPChangeDelegate);
+
 /*
 USTRUCT(Atomic, BlueprintType)
 struct FSkillTime
@@ -83,12 +85,13 @@ public:
 	int RangeListNum;
 
 	UFUNCTION(BlueprintCallable)
-	void SetHP(const float& value) { UseHP(); }
+	void SetHP(const float& value);
 
 	UFUNCTION(BlueprintCallable)
 	const float& GetHP() { return HP; }
-	
-	virtual void UseHP();
+
+public:
+	FHPEnemyHPChangeDelegate OnEnemyHPChange;
 protected:
 	void InitSkill(UStaticMeshComponent* StaticMeshComponent);
 	

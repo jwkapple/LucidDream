@@ -176,8 +176,9 @@ void AECSentry::DamagePlayer()
 	GetWorldTimerManager().ClearTimer(ECBPTimer);
 }
 
+
 void AECSentry::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                               int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ECSentry:: OnBeginOverlap"));
 	isPlayerOn = true;

@@ -25,6 +25,16 @@ void AEnemyCharacter::Tick(float DeltaTime)
 
 }
 
+void AEnemyCharacter::SetHP(const float& value)
+{
+	HP -= value;
+	
+	if(OnEnemyHPChange.IsBound())
+	{
+		OnEnemyHPChange.Broadcast();
+	}
+}
+
 void AEnemyCharacter::InitSkill(UStaticMeshComponent* StaticMeshComponent)
 {
 	StaticMeshComponent->SetWorldLocation(FVector(0.0f, 0.0f, 30.0f));
