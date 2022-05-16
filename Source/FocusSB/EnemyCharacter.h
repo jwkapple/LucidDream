@@ -88,10 +88,13 @@ public:
 	void SetHP(const float& value);
 
 	UFUNCTION(BlueprintCallable)
-	const float& GetHP() { return HP; }
+	const float& GetHP() const { return HP; }
 
 public:
+
+	UPROPERTY(BlueprintAssignable)
 	FHPEnemyHPChangeDelegate OnEnemyHPChange;
+	
 protected:
 	void InitSkill(UStaticMeshComponent* StaticMeshComponent);
 	

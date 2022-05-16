@@ -177,6 +177,10 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = SFX)
 	USoundCue* UseMPCue;
 
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	class UAudioComponent* PotionAC;
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	USoundCue* PotionCue;
 	
 	UPROPERTY(VisibleAnywhere)
 	AEnemyCharacter* pEnemyCharacter;

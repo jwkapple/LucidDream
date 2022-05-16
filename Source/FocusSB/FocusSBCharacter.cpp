@@ -121,12 +121,21 @@ AFocusSBCharacter::AFocusSBCharacter()
 
 	// ----------------- SFX --------------------
 	UseMPAC = CreateDefaultSubobject<UAudioComponent>(TEXT("MPUSESFX"));
-	static ConstructorHelpers::FObjectFinder<USoundCue> MCU(TEXT("/Game/Sound/SFX/FB-EnergyUse_1_Cue.FB-EnergyUse_1_Cue"));
-	if(MCU.Succeeded())
+	static ConstructorHelpers::FObjectFinder<USoundCue> UMC(TEXT("/Game/Sound/SFX/FB-EnergyUse_1_Cue.FB-EnergyUse_1_Cue"));
+	if(UMC.Succeeded())
 	{
 		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found UseMPCue data!!"));
-		UseMPCue = MCU.Object;
+		UseMPCue = UMC.Object;
 		UseMPAC->SetSound(UseMPCue);
+	}
+
+	PotionAC = CreateDefaultSubobject<UAudioComponent>(TEXT("POTIONSFX"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> PTC(TEXT("/Game/Sound/SFX/PlayerBuff-PotionDrink1_Cue.PlayerBuff-PotionDrink1_Cue"));
+	if(PTC.Succeeded())
+	{
+		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found PotionCue data!!"));
+		PotionCue = PTC.Object;
+		PotionAC->SetSound(PotionCue);
 	}
 }
 
@@ -315,8 +324,13 @@ void AFocusSBCharacter::OnPotion()
 		UE_LOG(LogTemp, Warning, TEXT("OnPotion:: Already used potion at this turn!!"));
 		return;
 	}
+	
 	mPotion--;
 
+	if(PotionAC != nullptr)
+	{
+		PotionAC->Play();
+	}
 	int HealValue = HP - 100.0f;
 	UseHP(HealValue);
 	
