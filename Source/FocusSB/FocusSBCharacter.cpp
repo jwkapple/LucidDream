@@ -170,7 +170,6 @@ void AFocusSBCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	
 }
 
-
 void AFocusSBCharacter::BeginPlay()
 {
 	Super::BeginPlay();

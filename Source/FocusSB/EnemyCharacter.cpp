@@ -27,6 +27,8 @@ void AEnemyCharacter::Tick(float DeltaTime)
 
 void AEnemyCharacter::SetHP(const float& value)
 {
+	UE_LOG(LogTemp, Warning, TEXT("EnemyCharacte/SetHPr:: Enemy Damaged"));
+		
 	HP -= value;
 	
 	if(OnEnemyHPChange.IsBound())
