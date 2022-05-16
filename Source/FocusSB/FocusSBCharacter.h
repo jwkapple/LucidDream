@@ -8,6 +8,7 @@
 #include "FocusSBGameInstance.h"
 #include "Components/SphereComponent.h"
 #include "EnemyCharacter.h"
+#include "Sound/SoundCue.h"
 #include "FocusSBCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPlayerTurnEndDelegate);
@@ -170,6 +171,12 @@ private:
 	uint8 MP = MP_MAX;
 	uint8 mPotion = PO_MAX;
 	float HP = 100.0f;
+
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	class UAudioComponent* UseMPAC;
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	USoundCue* UseMPCue;
+
 	
 	UPROPERTY(VisibleAnywhere)
 	AEnemyCharacter* pEnemyCharacter;

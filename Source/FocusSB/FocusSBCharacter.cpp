@@ -7,6 +7,7 @@
 #include "MainCamera.h"
 #include "ToolBuilderUtil.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -117,6 +118,16 @@ AFocusSBCharacter::AFocusSBCharacter()
 	CurrentDirection = EDirection::VERTICAL;
 	CurrentTurn = ETurn::Enemy;
 	RemainTime = 10.0f;
+
+	// ----------------- SFX --------------------
+	UseMPAC = CreateDefaultSubobject<UAudioComponent>(TEXT("MPUSESFX"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> MCU(TEXT("/Game/Sound/SFX/FB-EnergyUse_1_Cue.FB-EnergyUse_1_Cue"));
+	if(MCU.Succeeded())
+	{
+		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found UseMPCue data!!"));
+		UseMPCue = MCU.Object;
+		UseMPAC->SetSound(UseMPCue);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -388,6 +399,11 @@ void AFocusSBCharacter::UseMP(const uint8& value)
 {
 	MP -= value;
 
+	if(UseMPAC != nullptr)
+	{
+		UseMPAC->Play();
+	}
+	
 	if(OnMPChange.IsBound())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("OnMPChange Broadcast"));
