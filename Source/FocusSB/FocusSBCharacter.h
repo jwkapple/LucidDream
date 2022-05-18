@@ -72,6 +72,9 @@ protected:
 	void OnPotion();
 
 	void OnDustExplosion();
+
+	void OnLullaby();
+	
 	void TurnAtRate(float Rate);
 
 	void LookUpAtRate(float Rate);
@@ -125,6 +128,12 @@ private:
 	void OnEnemyEnd();
 	UFUNCTION()
 	void OnPlayerEnd();
+
+	UFUNCTION()
+	void AttackStart();
+
+	UFUNCTION()
+	void AttackrEnd();
 	
 	UPROPERTY()
 	FTimeline EnemyTL;
@@ -167,11 +176,20 @@ public:
 
 	UPROPERTY()
 	bool isPotionAvailable = true;
+
+	FTimerHandle PlayerTimer;
 private:
 	uint8 MP = MP_MAX;
 	uint8 mPotion = PO_MAX;
 	float HP = 100.0f;
 
+	
+	UPROPERTY(VisibleAnywhere, Category = Viewpoint)
+	AActor* mFrontCamera;
+
+	UPROPERTY(VisibleAnywhere, Category = Viewpoint)
+	AActor* mSideCamera;
+	
 	UPROPERTY(VisibleAnywhere, Category = SFX)
 	class UAudioComponent* UseMPAC;
 	UPROPERTY(VisibleAnywhere, Category = SFX)
@@ -181,6 +199,21 @@ private:
 	class UAudioComponent* PotionAC;
 	UPROPERTY(VisibleAnywhere, Category = SFX)
 	USoundCue* PotionCue;
+
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	class UAudioComponent* CountDownAC;
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	USoundCue* CountDownCue;
+
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	class UAudioComponent* EnemyTurnStartAC;
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	USoundCue* EnemyTurnStartCue;
+
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	class UAudioComponent* PlayerTurnStartAC;
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	USoundCue* PlayerTurnStartCue;
 	
 	UPROPERTY(VisibleAnywhere)
 	AEnemyCharacter* pEnemyCharacter;

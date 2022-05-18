@@ -121,12 +121,13 @@ AFocusSBCharacter::AFocusSBCharacter()
 
 	// ----------------- SFX --------------------
 	UseMPAC = CreateDefaultSubobject<UAudioComponent>(TEXT("MPUSESFX"));
-	static ConstructorHelpers::FObjectFinder<USoundCue> UMC(TEXT("/Game/Sound/SFX/FB-EnergyUse_1_Cue.FB-EnergyUse_1_Cue"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> UMC(TEXT("/Game/Sound/SFX/FB-EnergyUse_2_Cue.FB-EnergyUse_2_Cue"));
 	if(UMC.Succeeded())
 	{
 		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found UseMPCue data!!"));
 		UseMPCue = UMC.Object;
 		UseMPAC->SetSound(UseMPCue);
+		UseMPAC->SetAutoActivate(false);
 	}
 
 	PotionAC = CreateDefaultSubobject<UAudioComponent>(TEXT("POTIONSFX"));
@@ -136,6 +137,37 @@ AFocusSBCharacter::AFocusSBCharacter()
 		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found PotionCue data!!"));
 		PotionCue = PTC.Object;
 		PotionAC->SetSound(PotionCue);
+		PotionAC->SetAutoActivate(false);
+	}
+
+	CountDownAC = CreateDefaultSubobject<UAudioComponent>(TEXT("COUNTDOWNSFX"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> CDC(TEXT("/Game/Sound/SFX/UI-Countdown_1sec_Cue.UI-Countdown_1sec_Cue"));
+	if(CDC.Succeeded())
+	{
+		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found CountDownnCue data!!"));
+		CountDownCue = CDC.Object;
+		CountDownAC->SetSound(CountDownCue);
+		CountDownAC->SetAutoActivate(false);
+	}
+
+	EnemyTurnStartAC = CreateDefaultSubobject<UAudioComponent>(TEXT("ENEMYTURNSTARTSFX"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> ETSC(TEXT("/Game/Sound/SFX/UI-BossTurn1_Cue.UI-BossTurn1_Cue"));
+	if(ETSC.Succeeded())
+	{
+		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found EnemyTurnStartCue data!!"));
+		EnemyTurnStartCue = ETSC.Object;
+		EnemyTurnStartAC->SetSound(EnemyTurnStartCue);
+		EnemyTurnStartAC->SetAutoActivate(false);
+	}
+
+	PlayerTurnStartAC = CreateDefaultSubobject<UAudioComponent>(TEXT("PLAYERTURNSTARTSFX"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> PTSC(TEXT("/Game/Sound/SFX/UI-PlayerTurn1_Cue.UI-PlayerTurn1_Cue"));
+	if(PTSC.Succeeded())
+	{
+		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found PlayerTurnStartCue data!!"));
+		PlayerTurnStartCue = PTSC.Object;
+		PlayerTurnStartAC->SetSound(PlayerTurnStartCue);
+		PlayerTurnStartAC->SetAutoActivate(false);
 	}
 }
 
@@ -174,6 +206,24 @@ void AFocusSBCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TArray<AActor*> Cameras;
+
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),FName(TEXT("FrontCamera")), Cameras);
+	for(auto p : Cameras)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Front Camera"));
+		//APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
+		mFrontCamera = p;
+	}
+	
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(),FName(TEXT("SideCamera")), Cameras);
+	for(auto p : Cameras)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Found Side Camera"));
+		//APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
+		mSideCamera = p;
+	}
+	
 	mShield->SetMaterial(0, Shield_M);
 	
 	EnemyTL.Play();
@@ -249,38 +299,7 @@ void AFocusSBCharacter::MoveRight(float Value)
 
 void AFocusSBCharacter::OnAction()
 {
-	TArray<AActor*> Cameras;
-
-	switch (CurrentTurn) {
-	case ETurn::Enemy:
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Current : Enemy Camera"));
-				UGameplayStatics::GetAllActorsWithTag(GetWorld(),FName(TEXT("PlayerTurn")), Cameras);
-				for(auto p : Cameras)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Change to Player Camera"));
-					APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
-					OurPlayerController->SetViewTarget(p);
-				}
-				CurrentDirection = EDirection::HORIZONTAL;
-				break;
-			}
-	case ETurn::Player:
-			{
-				UE_LOG(LogTemp, Warning, TEXT("Current : Player Camera"));
-				UGameplayStatics::GetAllActorsWithTag(GetWorld(),FName(TEXT("EnemyTurn")), Cameras);
-				for(auto p : Cameras)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Change to Enemy Camera"));
-					APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
-					OurPlayerController->SetViewTarget(p);
-				}
-				
-				CurrentDirection = EDirection::VERTICAL;
-				break;
-			}
-	default: ;
-	}
+	
 }
 
 void AFocusSBCharacter::OnShield()
@@ -347,6 +366,8 @@ void AFocusSBCharacter::OnDustExplosion()
 	PlayerTL.Stop();
 
 	// Change to Side Camera
+	AttackStart();
+	
 	// Change platform's angle
 	// Play Niagara Effect
 
@@ -359,10 +380,17 @@ void AFocusSBCharacter::OnDustExplosion()
 		pEnemyCharacter->SetHP(5);
 	}
 
-	// Return to main Camera
+	GetWorldTimerManager().SetTimer(PlayerTimer, this, &AFocusSBCharacter::AttackrEnd, 2.0f, false);
+
+	
 	// Return platform's angle
 
-	PlayerTL.Play();
+	
+}
+
+void AFocusSBCharacter::OnLullaby()
+{
+	
 }
 
 void AFocusSBCharacter::PauseTimer()
@@ -372,11 +400,21 @@ void AFocusSBCharacter::PauseTimer()
 
 void AFocusSBCharacter::OnEnemyUpdate(float value)
 {
+	if(value == 2.0f || value == 3.0f || value == 4.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CountDown play"));
+		CountDownAC->Play();
+	}
 	RemainTime = value;
 }
 
 void AFocusSBCharacter::OnPlayerUpdate(float value)
 {
+	if(value == 2.0f || value == 3.0f || value == 4.0f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("CountDown play"));
+		CountDownAC->Play();
+	}
 	 RemainTime = value;
 }
 
@@ -386,6 +424,7 @@ void AFocusSBCharacter::OnEnemyEnd()
 	PlayerTL.PlayFromStart();
 	CurrentTurn = ETurn::Player;
 
+	PlayerTurnStartAC->Play();
 	if(OnEnemyTurnEnd.IsBound())
 	{
 		OnEnemyTurnEnd.Broadcast();
@@ -399,13 +438,27 @@ void AFocusSBCharacter::OnPlayerEnd()
 	
 	CurrentTurn = ETurn::Enemy;
 	isPotionAvailable = true;
-	
+
+	EnemyTurnStartAC->Play();
 	if(OnPlayerTurnEnd.IsBound())
 	{
 		OnPlayerTurnEnd.Broadcast();
 	}
 
 	MP = MP_MAX;
+}
+
+void AFocusSBCharacter::AttackStart()
+{
+	APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	OurPlayerController->SetViewTarget(mSideCamera);
+}
+
+void AFocusSBCharacter::AttackrEnd()
+{
+	APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	OurPlayerController->SetViewTarget(mFrontCamera);
+	PlayerTL.Play();
 }
 
 void AFocusSBCharacter::UseMP(const uint8& value)
