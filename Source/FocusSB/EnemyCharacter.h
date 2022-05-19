@@ -74,15 +74,12 @@ public:
 	virtual void DeActivate(){};
 
 	virtual void DamagePlayer(){};
-
+	
 	UFUNCTION(BlueprintCallable)
 	FEnemySkill GetSkill(const int& value) { return SkillList[value]; };
-
+	
 	UFUNCTION(BlueprintCallable)
 	UStaticMeshComponent* GetSkillRange(const int& value) { return SkillRangeList[value];};
-
-	UPROPERTY(VisibleAnywhere)
-	int RangeListNum;
 
 	UFUNCTION(BlueprintCallable)
 	void SetHP(const float& value);
@@ -94,7 +91,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FHPEnemyHPChangeDelegate OnEnemyHPChange;
-	
+
+	UPROPERTY(VisibleAnywhere)
+	int CurSkill = -1;
 protected:
 	void InitSkill(UStaticMeshComponent* StaticMeshComponent);
 	
@@ -107,6 +106,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = Stat)
 	float HP = 100.0f;
+
+	UPROPERTY(VisibleAnywhere, Category = Stat)
+	bool PatternVisibility = false;
 };
 
 

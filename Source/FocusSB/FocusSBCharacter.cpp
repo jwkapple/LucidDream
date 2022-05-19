@@ -37,6 +37,7 @@ AFocusSBCharacter::AFocusSBCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+	GetCharacterMovement()->MaxWalkSpeed = 1000.0f;
 	
 	mTargetarmLength = 1000.0f;
 	
@@ -278,6 +279,8 @@ void AFocusSBCharacter::MoveForward(float Value)
 		auto Axis = CurrentDirection == EDirection::VERTICAL ? EAxis::X : EAxis::Y;
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(Axis);
 		AddMovementInput(Direction, Value);
+
+		
 	}
 }
 
@@ -380,11 +383,10 @@ void AFocusSBCharacter::OnDustExplosion()
 		pEnemyCharacter->SetHP(5);
 	}
 
-	GetWorldTimerManager().SetTimer(PlayerTimer, this, &AFocusSBCharacter::AttackrEnd, 2.0f, false);
+	GetWorldTimerManager().SetTimer(PlayerTimer, this, &AFocusSBCharacter::AttackrEnd, 3.0f, false);
 
 	
 	// Return platform's angle
-
 	
 }
 
@@ -423,13 +425,15 @@ void AFocusSBCharacter::OnEnemyEnd()
 	UE_LOG(LogTemp, Warning, TEXT("--------------------------Enemy Turn End-------------------------"));
 	PlayerTL.PlayFromStart();
 	CurrentTurn = ETurn::Player;
-
+	isPatternVisible = false;
+	
 	PlayerTurnStartAC->Play();
 	if(OnEnemyTurnEnd.IsBound())
 	{
 		OnEnemyTurnEnd.Broadcast();
 	}
-};
+}
+
 void AFocusSBCharacter::OnPlayerEnd()
 {
 	UE_LOG(LogTemp, Warning, TEXT("-------------------------Player Turn End-------------------------"));
@@ -459,6 +463,23 @@ void AFocusSBCharacter::AttackrEnd()
 	APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
 	OurPlayerController->SetViewTarget(mFrontCamera);
 	PlayerTL.Play();
+}
+
+void AFocusSBCharacter::SetEnemyPatternVisible(const bool& value)
+{
+	if(isPatternVisible) return;
+	
+	if(CurrentTurn == ETurn::Player)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FocusSBCharacter/SetEnemyPatternVisible:: It's Player's Turn!"));
+		return;
+	}
+
+	if(OnPatternVisible.IsBound())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("FocusSBCharacter/SetEnemyPatternVisible:: OnPatternVisible Broadcast"));
+		OnPatternVisible.Broadcast();
+	}
 }
 
 void AFocusSBCharacter::UseMP(const uint8& value)

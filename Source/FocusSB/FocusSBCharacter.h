@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEnemyTurnEndDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMPChangeDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPChangeDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPotionChangeDelegate);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPatternVisibleDelegate);
 UENUM()
 enum class EDirection
 {
@@ -155,6 +155,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FPotionChangeDelegate OnPotionChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FPatternVisibleDelegate OnPatternVisible;
 	
 	UFUNCTION(BlueprintCallable)
 	const uint8& GetMP() const { UE_LOG(LogTemp, Warning, TEXT("Returning MP")); return MP; };
@@ -165,6 +168,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	const uint8& GetPotion() const { UE_LOG(LogTemp, Warning, TEXT("Returning POTION")); return mPotion; };
 
+	UFUNCTION(BlueprintCallable)
+	const bool& GetEnemyPatternVisible() const { return isPatternVisible; }
+	
+	UFUNCTION(BlueprintCallable)
+	void SetEnemyPatternVisible(const bool& value);
+	
 	UFUNCTION(BlueprintCallable)
 	void UseMP(const uint8& value);
 
@@ -177,6 +186,9 @@ public:
 	UPROPERTY()
 	bool isPotionAvailable = true;
 
+	UPROPERTY()
+	bool isPatternVisible = false;
+	
 	FTimerHandle PlayerTimer;
 private:
 	uint8 MP = MP_MAX;

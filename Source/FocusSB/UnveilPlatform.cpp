@@ -3,6 +3,9 @@
 
 #include "UnveilPlatform.h"
 
+#include "FocusSBCharacter.h"
+#include "Kismet/GameplayStatics.h"
+
 // Sets default values
 AUnveilPlatform::AUnveilPlatform()
 {
@@ -30,23 +33,32 @@ AUnveilPlatform::AUnveilPlatform()
 	{
 		mHitBox->SetStaticMesh(HitBox_SM.Object);
 		mHitBox->SetWorldScale3D(FVector(3.0f, 3.0f, 1.0f));
-		//mHitBox->SetVisibility(false);
-		mHitBox->SetCollisionProfileName(FName("NoCollision"));
+		mHitBox->SetVisibility(false);
+		mHitBox->SetCollisionProfileName(FName("DamageZone"));
 		mHitBox->SetupAttachment(GetRootComponent());
-		mHitBox->SetRelativeLocation(FVector::ZeroVector);
+		mHitBox->OnComponentBeginOverlap.AddDynamic(this, &AUnveilPlatform::OnBeginOverlap);
+		mHitBox->OnComponentEndOverlap.AddDynamic(this, &AUnveilPlatform::OnOverlapEnd);
 	}
 }
 
 void AUnveilPlatform::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	
+	if(OtherActor == PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VisionPlatform:: PlayerCharacter BeginOverlap"));
+		PlayerCharacter->SetEnemyPatternVisible(true);
+	}
 }
 
 void AUnveilPlatform::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	
+	if(OtherActor == PlayerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VisionPlatform:: PlayerCharacter OverlapEnd"));
+		PlayerCharacter->SetEnemyPatternVisible(false);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -54,6 +66,12 @@ void AUnveilPlatform::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PlayerCharacter = Cast<AFocusSBCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	if(PlayerCharacter != nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("VisionPlatform:: Found PlayerCharacter"));
+	}
+	
 	mStaticMeshComponent->SetMaterial(0, mMaterialInstance);
 }
 

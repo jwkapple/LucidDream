@@ -36,6 +36,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = HitBox)
 	UStaticMeshComponent* mHitBox;
-	
+
+	UPROPERTY(VisibleAnywhere, Category = Player)
+	class AFocusSBCharacter* PlayerCharacter;
 private:
 };

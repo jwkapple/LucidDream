@@ -117,8 +117,7 @@ void AECSentry::BeginPlay()
 	isPlayerOn = false;
 	
 	PlayerCharacter->OnPlayerTurnEnd.AddDynamic(this,&AECSentry::Activate);
-
-	RangeListNum = SkillRangeList.Num();
+	PlayerCharacter->OnPatternVisible.AddDynamic(this, &AECSentry::SetPatternVisibility);
 }
 
 void AECSentry::Tick(float DeltaSeconds)
@@ -172,6 +171,7 @@ void AECSentry::DamagePlayer()
 	pCurRange->SetVisibility(false);
 	
 	isPlayerOn = false;
+	CurSkill = -1;
 	
 	GetWorldTimerManager().ClearTimer(ECBPTimer);
 }
@@ -180,14 +180,12 @@ void AECSentry::DamagePlayer()
 void AECSentry::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ECSentry:: OnBeginOverlap"));
 	isPlayerOn = true;
 }
 
 void AECSentry::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ECSentry:: OnOverlapEnd"));
 	isPlayerOn = false;
 }
 
@@ -203,7 +201,6 @@ void AECSentry::BluePunishment()
 	auto pCurRange = GetSkillRange(CurSkill);
 
 	pCurRange->SetCollisionProfileName(FName("DamageZone"));
-	pCurRange->SetVisibility(true);
 
 	GetWorldTimerManager().SetTimer(ECBPTimer, this, &AECSentry::DamagePlayer, 3.0f, false);
 
@@ -218,7 +215,6 @@ void AECSentry::GodsShout()
 	UStaticMeshComponent* pCurRange = GetSkillRange(CurSkill);
 
 	pCurRange->SetCollisionProfileName(FName("DamageZone"));
-	pCurRange->SetVisibility(true);
 
 	GetWorldTimerManager().SetTimer(ECBPTimer, this, &AECSentry::DamagePlayer, 3.0f, false);
 
