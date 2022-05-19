@@ -39,9 +39,11 @@ public:
 	class AFocusSBCharacter* PlayerCharacter;
 
 	UFUNCTION(BlueprintCallable)
-	void ResetVisibility() { mStaticMeshComponent->SetVisibility(true); }
+	void ResetVisibility();
 private:
 	TArray<FVector> RandPos = {FVector{40, -290, 20},FVector{40, 310, 20},
 		                       FVector{-250, -310, -140},FVector{-250, 20, -140},FVector{-250, 310, -140},
 							   FVector{290, -320, 170}, FVector{290, -10, 170}, FVector{290, 320, 170}};
+
+	int RandPosNum;
 };

@@ -17,6 +17,7 @@ AUnveilPlatform::AUnveilPlatform()
 	if(Platform_SM.Succeeded())
 	{
 		mStaticMeshComponent->SetStaticMesh(Platform_SM.Object);
+		mStaticMeshComponent->SetWorldRotation(FRotator(30.0f, 0.0f, 0.0f));
 		mStaticMeshComponent->SetVisibility(false);
 	}
 
@@ -40,6 +41,8 @@ AUnveilPlatform::AUnveilPlatform()
 		mHitBox->SetupAttachment(GetRootComponent());
 		mHitBox->OnComponentBeginOverlap.AddDynamic(this, &AUnveilPlatform::OnBeginOverlap);
 	}
+
+	RandPosNum = RandPos.Num();
 }
 
 void AUnveilPlatform::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
@@ -71,5 +74,14 @@ void AUnveilPlatform::BeginPlay()
 void AUnveilPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AUnveilPlatform::ResetVisibility()
+{
+	FVector randomPosition = RandPos[FMath::RandRange(0, RandPosNum - 1)];
+
+	mStaticMeshComponent->SetWorldLocation(randomPosition);
+	mStaticMeshComponent->SetVisibility(true);
+	
 }
 
