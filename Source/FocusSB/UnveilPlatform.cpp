@@ -17,8 +17,10 @@ AUnveilPlatform::AUnveilPlatform()
 	if(Platform_SM.Succeeded())
 	{
 		mStaticMeshComponent->SetStaticMesh(Platform_SM.Object);
+		mStaticMeshComponent->SetVisibility(false);
 	}
 
+	mStaticMeshComponent->SetCollisionProfileName(FName("NoCollision"));
 	SetRootComponent(mStaticMeshComponent);
 	
 	static ConstructorHelpers::FObjectFinder<UMaterialInstance> Platform_MI(TEXT("/Game/UnveilPlatform_MI.UnveilPlatform_MI"));
@@ -37,25 +39,16 @@ AUnveilPlatform::AUnveilPlatform()
 		mHitBox->SetCollisionProfileName(FName("DamageZone"));
 		mHitBox->SetupAttachment(GetRootComponent());
 		mHitBox->OnComponentBeginOverlap.AddDynamic(this, &AUnveilPlatform::OnBeginOverlap);
-		mHitBox->OnComponentEndOverlap.AddDynamic(this, &AUnveilPlatform::OnOverlapEnd);
 	}
 }
 
 void AUnveilPlatform::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor == PlayerCharacter)
+	if(OtherActor == PlayerCharacter || mStaticMeshComponent->IsVisible() == true)
 	{
 		PlayerCharacter->SetPatternVisible(true);
-	}
-}
-
-void AUnveilPlatform::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	if(OtherActor == PlayerCharacter)
-	{
-		PlayerCharacter->SetPatternVisible(false);
+		mStaticMeshComponent->SetVisibility(false);
 	}
 }
 
@@ -69,7 +62,8 @@ void AUnveilPlatform::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("VisionPlatform:: Found PlayerCharacter"));
 	}
-	
+
+	PlayerCharacter->OnPlayerTurnEnd.AddDynamic(this, &AUnveilPlatform::ResetVisibility);
 	mStaticMeshComponent->SetMaterial(0, mMaterialInstance);
 }
 
@@ -77,6 +71,5 @@ void AUnveilPlatform::BeginPlay()
 void AUnveilPlatform::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
