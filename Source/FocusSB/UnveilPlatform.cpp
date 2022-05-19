@@ -46,8 +46,7 @@ void AUnveilPlatform::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor
 {
 	if(OtherActor == PlayerCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("VisionPlatform:: PlayerCharacter BeginOverlap"));
-		PlayerCharacter->SetEnemyPatternVisible(true);
+		PlayerCharacter->SetPatternVisible(true);
 	}
 }
 
@@ -56,8 +55,7 @@ void AUnveilPlatform::OnOverlapEnd(UPrimitiveComponent* OverlappedComp, AActor* 
 {
 	if(OtherActor == PlayerCharacter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("VisionPlatform:: PlayerCharacter OverlapEnd"));
-		PlayerCharacter->SetEnemyPatternVisible(false);
+		PlayerCharacter->SetPatternVisible(false);
 	}
 }
 

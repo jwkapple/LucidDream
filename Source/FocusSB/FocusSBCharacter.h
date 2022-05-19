@@ -169,10 +169,10 @@ public:
 	const uint8& GetPotion() const { UE_LOG(LogTemp, Warning, TEXT("Returning POTION")); return mPotion; };
 
 	UFUNCTION(BlueprintCallable)
-	const bool& GetEnemyPatternVisible() const { return isPatternVisible; }
+	const bool& GetPatternVisible() const { return isPatternVisible; }
 	
 	UFUNCTION(BlueprintCallable)
-	void SetEnemyPatternVisible(const bool& value);
+	void SetPatternVisible(const bool& value);
 	
 	UFUNCTION(BlueprintCallable)
 	void UseMP(const uint8& value);

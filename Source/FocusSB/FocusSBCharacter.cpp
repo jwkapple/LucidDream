@@ -125,7 +125,6 @@ AFocusSBCharacter::AFocusSBCharacter()
 	static ConstructorHelpers::FObjectFinder<USoundCue> UMC(TEXT("/Game/Sound/SFX/FB-EnergyUse_2_Cue.FB-EnergyUse_2_Cue"));
 	if(UMC.Succeeded())
 	{
-		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found UseMPCue data!!"));
 		UseMPCue = UMC.Object;
 		UseMPAC->SetSound(UseMPCue);
 		UseMPAC->SetAutoActivate(false);
@@ -135,7 +134,6 @@ AFocusSBCharacter::AFocusSBCharacter()
 	static ConstructorHelpers::FObjectFinder<USoundCue> PTC(TEXT("/Game/Sound/SFX/PlayerBuff-PotionDrink1_Cue.PlayerBuff-PotionDrink1_Cue"));
 	if(PTC.Succeeded())
 	{
-		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found PotionCue data!!"));
 		PotionCue = PTC.Object;
 		PotionAC->SetSound(PotionCue);
 		PotionAC->SetAutoActivate(false);
@@ -145,7 +143,6 @@ AFocusSBCharacter::AFocusSBCharacter()
 	static ConstructorHelpers::FObjectFinder<USoundCue> CDC(TEXT("/Game/Sound/SFX/UI-Countdown_1sec_Cue.UI-Countdown_1sec_Cue"));
 	if(CDC.Succeeded())
 	{
-		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found CountDownnCue data!!"));
 		CountDownCue = CDC.Object;
 		CountDownAC->SetSound(CountDownCue);
 		CountDownAC->SetAutoActivate(false);
@@ -155,7 +152,6 @@ AFocusSBCharacter::AFocusSBCharacter()
 	static ConstructorHelpers::FObjectFinder<USoundCue> ETSC(TEXT("/Game/Sound/SFX/UI-BossTurn1_Cue.UI-BossTurn1_Cue"));
 	if(ETSC.Succeeded())
 	{
-		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found EnemyTurnStartCue data!!"));
 		EnemyTurnStartCue = ETSC.Object;
 		EnemyTurnStartAC->SetSound(EnemyTurnStartCue);
 		EnemyTurnStartAC->SetAutoActivate(false);
@@ -165,7 +161,6 @@ AFocusSBCharacter::AFocusSBCharacter()
 	static ConstructorHelpers::FObjectFinder<USoundCue> PTSC(TEXT("/Game/Sound/SFX/UI-PlayerTurn1_Cue.UI-PlayerTurn1_Cue"));
 	if(PTSC.Succeeded())
 	{
-		UE_LOG(LogTemp,Warning, TEXT("FocusSBCharacter:: Found PlayerTurnStartCue data!!"));
 		PlayerTurnStartCue = PTSC.Object;
 		PlayerTurnStartAC->SetSound(PlayerTurnStartCue);
 		PlayerTurnStartAC->SetAutoActivate(false);
@@ -212,7 +207,6 @@ void AFocusSBCharacter::BeginPlay()
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(),FName(TEXT("FrontCamera")), Cameras);
 	for(auto p : Cameras)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found Front Camera"));
 		//APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
 		mFrontCamera = p;
 	}
@@ -220,7 +214,6 @@ void AFocusSBCharacter::BeginPlay()
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(),FName(TEXT("SideCamera")), Cameras);
 	for(auto p : Cameras)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Found Side Camera"));
 		//APlayerController* OurPlayerController = UGameplayStatics::GetPlayerController(this, 0);
 		mSideCamera = p;
 	}
@@ -442,7 +435,8 @@ void AFocusSBCharacter::OnPlayerEnd()
 	
 	CurrentTurn = ETurn::Enemy;
 	isPotionAvailable = true;
-
+	isPatternVisible = false;
+	
 	EnemyTurnStartAC->Play();
 	if(OnPlayerTurnEnd.IsBound())
 	{
@@ -465,9 +459,11 @@ void AFocusSBCharacter::AttackrEnd()
 	PlayerTL.Play();
 }
 
-void AFocusSBCharacter::SetEnemyPatternVisible(const bool& value)
+void AFocusSBCharacter::SetPatternVisible(const bool& value)
 {
 	if(isPatternVisible) return;
+
+	isPatternVisible = true;
 	
 	if(CurrentTurn == ETurn::Player)
 	{
