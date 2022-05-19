@@ -272,8 +272,6 @@ void AFocusSBCharacter::MoveForward(float Value)
 		auto Axis = CurrentDirection == EDirection::VERTICAL ? EAxis::X : EAxis::Y;
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(Axis);
 		AddMovementInput(Direction, Value);
-
-		
 	}
 }
 
