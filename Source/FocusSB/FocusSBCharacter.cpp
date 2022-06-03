@@ -388,7 +388,7 @@ void AFocusSBCharacter::OnLullaby()
 
 void AFocusSBCharacter::PauseTimer()
 {
-
+	
 }
 
 void AFocusSBCharacter::OnEnemyUpdate(float value)
@@ -408,7 +408,7 @@ void AFocusSBCharacter::OnPlayerUpdate(float value)
 		UE_LOG(LogTemp, Warning, TEXT("CountDown play"));
 		CountDownAC->Play();
 	}
-	 RemainTime = value;
+	RemainTime = value;
 }
 
 void AFocusSBCharacter::OnEnemyEnd()

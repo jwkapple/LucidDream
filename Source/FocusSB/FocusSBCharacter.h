@@ -158,6 +158,11 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FPatternVisibleDelegate OnPatternVisible;
+
+	UFUNCTION(BlueprintCallable)
+	const float& GetRemainTime() const { return RemainTime; };
+
+	const ETurn& GetCurrentTurn() const { return CurrentTurn; };
 	
 	UFUNCTION(BlueprintCallable)
 	const uint8& GetMP() const { UE_LOG(LogTemp, Warning, TEXT("Returning MP")); return MP; };
@@ -173,7 +178,18 @@ public:
 	
 	UFUNCTION(BlueprintCallable)
 	void SetPatternVisible(const bool& value);
-	
+
+	UFUNCTION(BlueprintCallable)
+	void SetActionUIVisible(const bool& value)
+	{
+		isActionUIVisible = value;
+
+		if(value)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Peppy:: Action ON"));
+		}
+		else UE_LOG(LogTemp, Warning, TEXT("Peppy:: Action OFF"));
+	};
 	UFUNCTION(BlueprintCallable)
 	void UseMP(const uint8& value);
 
@@ -188,13 +204,15 @@ public:
 
 	UPROPERTY()
 	bool isPatternVisible = false;
+
+	UPROPERTY()
+	bool isActionUIVisible = false;
 	
 	FTimerHandle PlayerTimer;
 private:
 	uint8 MP = MP_MAX;
 	uint8 mPotion = PO_MAX;
 	float HP = 100.0f;
-
 	
 	UPROPERTY(VisibleAnywhere, Category = Viewpoint)
 	AActor* mFrontCamera;
