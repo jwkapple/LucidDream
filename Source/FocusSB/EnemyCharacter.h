@@ -6,6 +6,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 #include "EnemyCharacter.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FHPEnemyHPChangeDelegate);
@@ -99,11 +101,16 @@ protected:
 	
 	std::vector<FEnemySkill> SkillList;
 
+	TArray<class UNiagaraSystem*> SkillEffects;
+	
 	TArray<UStaticMeshComponent*> SkillRangeList;
 
 	UPROPERTY(VisibleAnywhere, Category = Player)
 	class AFocusSBCharacter* PlayerCharacter;
 
+	UPROPERTY(VisibleAnywhere, Category = Player)
+	class AUnveilPlatform* UnveilPlatform;
+	
 	UPROPERTY(VisibleAnywhere, Category = Stat)
 	float HP = 100.0f;
 

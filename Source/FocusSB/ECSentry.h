@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "ECSentry.generated.h"
 
+class USoundCue;
 /**
  * 
  */
@@ -53,10 +54,24 @@ private:
 	void BluePunishment();
 
 	void GodsShout();
-	
+
+	void PlayEffect()
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, SkillEffects[CurSkill],
+			FVector::ZeroVector, FRotator::ZeroRotator);
+		
+		GetWorldTimerManager().ClearTimer(EffectTimer);
+	}
 private:
 	UMaterialInstance* MaterialInstance;
 	bool isPlayerOn;
-	
-	FTimerHandle ECBPTimer;
+
+	FTimerHandle SkillTimer;
+	FTimerHandle EffectTimer;
+	FTimerHandle DamageTimer;
+
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	class UAudioComponent* GodsShoutAC;
+	UPROPERTY(VisibleAnywhere, Category = SFX)
+	USoundCue* GodsShoutCue;
 };
