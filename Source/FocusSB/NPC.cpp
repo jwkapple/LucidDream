@@ -23,6 +23,8 @@ ANPC::ANPC()
 	if(NPC_SM.Succeeded())
 	{
 		mStaticMeshComponent->SetStaticMesh(NPC_SM.Object);
+		mStaticMeshComponent->SetWorldScale3D(FVector(2.0f, 2.0f, 2.0f));
+		mStaticMeshComponent->SetRelativeScale3D(FVector(2.0f, 2.0f, 2.0f));
 	}
 
 	mStaticMeshComponent->SetCollisionProfileName(FName("BlockAll"));
@@ -39,6 +41,8 @@ ANPC::ANPC()
 	if(HitBox_SM.Succeeded())
 	{
 		mHitBox->SetStaticMesh(HitBox_SM.Object);
+		mHitBox->SetWorldScale3D(FVector(2.0f, 2.0f, 2.0f));
+		mHitBox->SetRelativeScale3D(FVector(2.0f, 2.0f, 2.0f));
 		mHitBox->SetVisibility(false);
 		mHitBox->SetCollisionProfileName(FName("NPC"));
 		mHitBox->SetupAttachment(GetRootComponent());

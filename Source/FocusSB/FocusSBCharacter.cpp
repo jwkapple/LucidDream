@@ -34,7 +34,7 @@ AFocusSBCharacter::AFocusSBCharacter()
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, -1.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 	GetCharacterMovement()->MaxWalkSpeed = 1000.0f;
@@ -287,6 +287,7 @@ void AFocusSBCharacter::MoveRight(float Value)
 		auto Axis = CurrentDirection == EDirection::VERTICAL ? EAxis::Y : EAxis::X;
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(Axis);
 		// add movement in that direction
+		
 		AddMovementInput(Direction, Value);
 	}
 }
