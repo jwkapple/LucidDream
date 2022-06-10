@@ -34,7 +34,7 @@ AFocusSBCharacter::AFocusSBCharacter()
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = true; // Character moves in the direction of input...	
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, -1.0f, 0.0f); // ...at this rotation rate
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f); // ...at this rotation rate
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
 	GetCharacterMovement()->MaxWalkSpeed = 1000.0f;
@@ -173,8 +173,8 @@ AFocusSBCharacter::AFocusSBCharacter()
 void AFocusSBCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	check(PlayerInputComponent);
-	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AFocusSBCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFocusSBCharacter::MoveRight);
@@ -219,8 +219,12 @@ void AFocusSBCharacter::BeginPlay()
 	}
 	
 	mShield->SetMaterial(0, Shield_M);
+
 	
-	EnemyTL.Play();
+	if(CurrentTurn != ETurn::Overworld)
+	{
+		EnemyTL.Play();
+	}
 }
 
 void AFocusSBCharacter::Tick(float DeltaSeconds)
@@ -397,7 +401,10 @@ void AFocusSBCharacter::OnEnemyUpdate(float value)
 	if(value == 2.0f || value == 3.0f || value == 4.0f)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CountDown play"));
-		CountDownAC->Play();
+		if(CountDownAC != nullptr)
+		{
+			CountDownAC->Play();
+		}
 	}
 	RemainTime = value;
 }
@@ -407,7 +414,10 @@ void AFocusSBCharacter::OnPlayerUpdate(float value)
 	if(value == 2.0f || value == 3.0f || value == 4.0f)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("CountDown play"));
-		CountDownAC->Play();
+		if(CountDownAC != nullptr)
+		{
+			CountDownAC->Play();
+		}
 	}
 	RemainTime = value;
 }
@@ -418,8 +428,12 @@ void AFocusSBCharacter::OnEnemyEnd()
 	PlayerTL.PlayFromStart();
 	CurrentTurn = ETurn::Player;
 	isPatternVisible = false;
-	
-	PlayerTurnStartAC->Play();
+
+	if(PlayerTurnStartAC != nullptr)
+	{
+		PlayerTurnStartAC->Play();
+	}
+
 	if(OnEnemyTurnEnd.IsBound())
 	{
 		OnEnemyTurnEnd.Broadcast();
@@ -435,8 +449,11 @@ void AFocusSBCharacter::OnPlayerEnd()
 	CurrentTurn = ETurn::Enemy;
 	isPotionAvailable = true;
 	isPatternVisible = false;
+	if(EnemyTurnStartAC != nullptr)
+	{
+		EnemyTurnStartAC->Play();
+	}
 	
-	EnemyTurnStartAC->Play();
 	if(OnPlayerTurnEnd.IsBound())
 	{
 		OnPlayerTurnEnd.Broadcast();

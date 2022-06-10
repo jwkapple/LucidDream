@@ -12,6 +12,7 @@
 UENUM(BlueprintType)
 enum class ETurn : uint8
 {
+	Overworld UMETA(DisplayName = "Overworld"),
 	Player UMETA(DisplayName = "Player Turn"),
 	Enemy  UMETA(DisplayName = "Enemy Turn")
 };
