@@ -298,7 +298,7 @@ void AFocusSBCharacter::MoveRight(float Value)
 
 void AFocusSBCharacter::OnAction()
 {
-	
+	 
 }
 
 void AFocusSBCharacter::OnShield()
